@@ -1,0 +1,169 @@
+/* main.css - Premium Dark Theme */
+
+/* Base Streamlit overrides */
+.stApp {
+    background-color: #0f1117;
+    color: #e0e2e6;
+    font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+/* Hide Default Chrome */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #0f1117; 
+}
+::-webkit-scrollbar-thumb {
+    background: #4a4a5a; 
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #6a6a8a; 
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: rgba(30, 32, 40, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Gradient text headers */
+.gradient-text {
+    background: linear-gradient(90deg, #A78BFA, #F472B6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* Pills and Badges */
+.status-pill {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-pass { background-color: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid #10B981; }
+.status-warn { background-color: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid #F59E0B; }
+.status-fail { background-color: rgba(239, 68, 68, 0.2); color: #EF4444; border: 1px solid #EF4444; }
+.status-info { background-color: rgba(59, 130, 246, 0.2); color: #3B82F6; border: 1px solid #3B82F6; }
+
+/* Gradient Buttons */
+.stButton>button {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.stButton>button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+    background: linear-gradient(135deg, #4f46e5 0%, #9333ea 100%);
+    color: white;
+}
+
+/* Verification Panels */
+.verify-panel {
+    background: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.verify-panel.warning {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.verify-panel.error {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Red Flags and Recommendations */
+.red-flag-card {
+    background: rgba(30,32,40,0.8);
+    border-left: 4px solid #EF4444;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 0.5rem;
+}
+
+.rec-card {
+    background: rgba(30,32,40,0.8);
+    border-left: 4px solid #3B82F6;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 0.5rem;
+}
+
+/* Dimension Cards */
+.dimension-card {
+    background: rgba(40,42,50,0.6);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.dimension-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Progress and Spinner */
+.stProgress > div > div > div {
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+}
+
+/* Sidebar Styling */
+[data-testid="stSidebar"] {
+    background-color: #1a1c24;
+    border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Inputs / TextAreas */
+.stTextInput>div>div>input {
+    background-color: #1e2028;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+.stTextArea>div>div>textarea {
+    background-color: #1e2028;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+
+/* Info Cards */
+.info-card { background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3B82F6; padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem; }
+.success-card { background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10B981; padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem; }
+.warning-card { background: rgba(245, 158, 11, 0.1); border-left: 4px solid #F59E0B; padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem; }
+.error-card { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #EF4444; padding: 1rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem; }
