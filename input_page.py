@@ -35,10 +35,15 @@ def render_input_page():
         st.session_state["project_meta"]["context"] = st.text_area("Additional Context (Optional)", value=st.session_state["project_meta"].get("context", ""), height=100)
         
         st.markdown("### Configuration")
+        providers = ["Auto", "Groq", "OpenAI"]
+        current_provider = st.session_state["generation_settings"].get("model_provider", "Auto")
+        if current_provider not in providers:
+            current_provider = "Auto"
+
         st.session_state["generation_settings"]["model_provider"] = st.selectbox(
             "AI Model Provider",
-            ["Auto", "Groq", "Gemini"],
-            index=["Auto", "Groq", "Gemini"].index(st.session_state["generation_settings"].get("model_provider", "Auto"))
+            providers,
+            index=providers.index(current_provider),
         )
         
         st.markdown("### Actions")

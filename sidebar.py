@@ -51,4 +51,4 @@ def render_sidebar():
             st.markdown("- **FSD Generated:** ❌")
 
         st.markdown("---")
-        st.caption("Powered by Groq & Gemini")
+        st.caption("Powered by Groq & OpenAI")

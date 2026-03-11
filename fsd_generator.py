@@ -1,15 +1,26 @@
 import streamlit as st
 import time
 from prompt_engine import build_section_prompt, build_quality_eval_prompt, SYSTEM_PROMPT, FSD_SECTIONS
-from llm_client import AutoClient, GroqClient, GeminiClient
+from llm_client import AutoClient, GroqClient, OpenAIClient
 
 def determine_client(provider, keys):
+    openai_model = (keys or {}).get("openai_model") or "gpt-4o-mini"
+    groq_model = (keys or {}).get("groq_model") or "llama-3.3-70b-versatile"
     if provider == "Groq":
-        return GroqClient(keys.get("groq"))
-    elif provider == "Gemini":
-        return GeminiClient(keys.get("gemini"))
+        if not (keys or {}).get("groq"):
+            raise ValueError("Groq API key missing. Add it in Settings or switch provider.")
+        return GroqClient(keys.get("groq"), model_name=groq_model)
+    elif provider == "OpenAI":
+        if not (keys or {}).get("openai"):
+            raise ValueError("OpenAI API key missing. Add it in Settings or switch provider.")
+        return OpenAIClient(keys.get("openai"), model_name=openai_model)
     else:
-        return AutoClient(keys.get("groq"), keys.get("gemini"))
+        return AutoClient(
+            keys.get("groq"),
+            keys.get("openai"),
+            groq_model=groq_model,
+            openai_model=openai_model,
+        )
 
 def generate_fsd_orchestrator(brd_text, project_meta, settings, api_keys, progress_bar, status_text, preview_area):
     client = determine_client(settings.get("model_provider", "Auto"), api_keys)

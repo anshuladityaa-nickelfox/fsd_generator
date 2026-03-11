@@ -1,21 +1,23 @@
 # SpecForge | BRD-to-FSD Generator
 
-SpecForge is an AI-powered Streamlit application designed to automatically convert Business Requirement Documents (BRDs) into structured, comprehensive Functional Specification Documents (FSDs). It leverages the power of advanced Large Language Models (like Groq and Gemini) to verify business requirements and generate technical specifications.
+SpecForge is an AI-powered BRD→FSD generator. It verifies BRD quality, runs feedback loops to fill gaps, and generates detailed Functional Specification Documents (FSDs) using Groq/OpenAI.
 
 ## 🚀 Features
 
 - **Document Parsing**: Upload and parse BRDs in various formats, including PDF, DOCX, and raw text.
 - **AI-Powered BRD Verification**: Before generating an FSD, the application uses an LLM (such as Groq) to analyze the provided BRD to ensure it contains sufficient detail, structure, and clarity.
-- **Automated FSD Generation**: Generates a detailed Functional Specification Document based on the verified BRD using state-of-the-art LLMs (Gemini, Groq).
+- **Automated FSD Generation**: Generates a detailed Functional Specification Document based on the verified BRD using state-of-the-art LLMs (OpenAI, Groq).
 - **Customizable Generation Settings**: Adjust the depth, terminology, language, and the target LLM provider through a dedicated Settings interface.
 - **Export to Word**: Easily export the generated FSD directly to a Microsoft Word (`.docx`) file for easy sharing and further editing.
+- **Modern UI (optional)**: Run a React UI backed by a FastAPI REST API.
 
 ## 🛠️ Technology Stack
 
-- **Frontend/UI**: [Streamlit](https://streamlit.io/)
+- **Frontend/UI**: Streamlit (existing) or React (optional)
+- **Backend/API**: FastAPI (optional, for React UI)
 - **LLM Integrations**: 
   - [Groq](https://groq.com/) (Fast inference, reasoning)
-  - [Google Gemini](https://deepmind.google/technologies/gemini/) (Contextual generation)
+  - OpenAI (Text generation)
 - **Document Processing**: 
   - `PyMuPDF` for fast PDF parsing.
   - `python-docx` for reading and exporting Word documents.
@@ -24,13 +26,16 @@ SpecForge is an AI-powered Streamlit application designed to automatically conve
 ## 📂 Project Structure
 
 - `app.py`: The main entry point for the Streamlit application. Manages page routing and session state.
-- `brd_verifier.py`: Contains the logic for analyzing and verifying the quality of the uploaded BRD.
+- `brd_core.py`: BRD verification + enrichment core logic (no UI).
+- `brd_verifier_ui.py`: Streamlit renderer for verification results.
 - `fsd_generator.py`: Module responsible for orchestrating the FSD generation using LLMs.
+- `fsd_core.py`: FSD generation core logic (no UI).
 - `file_parser.py`: Utility functions to extract text from uploaded PDF and DOCX files.
 - `docx_exporter.py`: Handles exporting the generated FSD content to a structured `.docx` file.
-- `llm_client.py`: Centralized client wrapper for making API calls to Groq and Gemini.
+- `llm_client.py`: Centralized client wrapper for making API calls to Groq and OpenAI.
 - `prompt_engine.py`: Manages the prompt templates used for BRD verification and FSD generation tasks.
 - `helpers.py`: Various helper functions used across the application.
+- `api_server.py`: FastAPI backend exposing REST endpoints for a React UI.
 - UI Pages:
   - `sidebar.py`: Application sidebar navigation.
   - `input_page.py`: File upload and BRD input interface.
@@ -52,11 +57,25 @@ SpecForge is an AI-powered Streamlit application designed to automatically conve
 
 ## 🚀 Usage
 
-1. **Set up API Keys**: You will need API keys from Groq and Google (for Gemini). You can either set them in your environment variables or directly enter them in the application's **Settings** page.
-2. **Run the Application**: Starting the Streamlit server.
+1. **Set up API Keys**: You will need API keys from Groq and OpenAI. You can either set them in your environment variables or directly enter them in the application's **Settings** page.
+2. **Run the Application**:
 
    ```bash
-   streamlit run app.py
+   ./venv/bin/streamlit run app.py
+   ```
+
+   Or run the modern React UI:
+
+   Backend:
+   ```bash
+   ./venv/bin/uvicorn api_server:app --reload --port 8000
+   ```
+
+   Frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
    ```
 
 3. **Navigate through the App**:
@@ -70,7 +89,7 @@ SpecForge is an AI-powered Streamlit application designed to automatically conve
 API keys and specific generation settings can be configured via the **Settings** page within the app. The application primarily supports the following environment variables (which can also be placed in a `.env` file):
 
 - `GROQ_API_KEY`: Your Groq API key.
-- `GEMINI_API_KEY` (or `GOOGLE_API_KEY`): Your Google Gemini API key.
+- `OPENAI_API_KEY`: Your OpenAI API key.
 
 ---
-*Built with ❤️ using Streamlit and Generative AI.*
+*Built with Streamlit/React and Generative AI.*
