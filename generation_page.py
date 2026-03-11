@@ -5,7 +5,7 @@ from helpers import styled_card
 def render_generation_page():
     st.markdown("## ⚙️ FSD Generation")
     
-    brd_text = st.session_state.get("brd_text", "")
+    brd_text = st.session_state.get("brd_text_for_ai") or st.session_state.get("brd_text", "")
     if not brd_text:
         st.error("No BRD context found.")
         st.stop()
