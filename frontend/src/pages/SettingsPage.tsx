@@ -60,7 +60,7 @@ export function SettingsPage(props: { state: AppState; set: (patch: Partial<AppS
             <input
               value={state.apiKeys.openai_model}
               onChange={(e) => set({ apiKeys: { ...state.apiKeys, openai_model: e.target.value } })}
-              placeholder="gpt-4o-mini"
+              placeholder="gpt-5.2"
             />
           </div>
         </div>

@@ -66,7 +66,7 @@ def init_session_state():
             "groq": "",
             "groq_model": "llama-3.3-70b-versatile",
             "openai": "",
-            "openai_model": "gpt-4o-mini",
+            "openai_model": "gpt-5.2",
         },
         "debug_mode": False,
         "generation_settings": {
@@ -75,7 +75,8 @@ def init_session_state():
             "terminology": "Standard FSD",
             "language": "English",
             "model_provider": "Auto"
-        }
+        },
+        "fsd_validation": None,
     }
     for key, val in defaults.items():
         if key not in st.session_state:

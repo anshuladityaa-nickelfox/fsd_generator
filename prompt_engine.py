@@ -29,6 +29,12 @@ MODULE_EXTRACT_SYSTEM_PROMPT = """You are a senior Business Analyst. Extract fun
 Return only JSON.
 """
 
+FSD_VALIDATOR_SYSTEM_PROMPT = """You are a rigorous FSD Quality Auditor. Your job is to evaluate a Functional Specification Document against the original BRD and FSD best-practice standards.
+Identify vagueness, missing acceptance criteria, absent error states, TBDs without justification, and misalignment with the BRD.
+Focus on identifying specific actionable issues that need fixing to make the document developer-ready.
+You MUST output ONLY a valid JSON object.
+"""
+
 BRD_EXPECTED_ELEMENTS = [
     "Project background / problem statement",
     "Tech stack / architecture (user-provided is acceptable)",
@@ -484,3 +490,85 @@ You MUST output ONLY a valid JSON object with this structure:
   ]
 }}
 """
+
+
+def build_fsd_audit_prompt(full_fsd: str, brd_text: str, project_meta: dict) -> str:
+    """Returns a JSON-structured quality audit of the full FSD."""
+    fsd_sample = full_fsd[:12000]
+    brd_sample = brd_text[:4000]
+    name = project_meta.get("name", "Unknown")
+    context = project_meta.get("context", "None provided")
+    tech = project_meta.get("tech_stack", "Not provided")
+    return (
+        "You are auditing the following Functional Specification Document (FSD) against its source BRD.\n\n"
+        f"Project: {name}\nContext: {context}\nTech Stack: {tech}\n\n"
+        "Source BRD (truncated):\n---\n"
+        f"{brd_sample}\n---\n\n"
+        "FSD content (truncated for token limits):\n---\n"
+        f"{fsd_sample}\n...\n---\n\n"
+        "For each FSD section present, identify specific issues or gaps.\n\n"
+        "You MUST output ONLY a valid JSON object with this structure:\n"
+        "{\n"
+        '  "overall_status": "CLEAN | NEEDS_FIX | CRITICAL_GAPS",\n'
+        '  "overall_summary": "Brief 2-3 sentence summary of FSD quality and main weaknesses.",\n'
+        '  "section_audits": [\n'
+        "    {\n"
+        '      "section": "Section title (e.g. 6. Functional Requirements)",\n'
+        '      "status": "CLEAN | NEEDS_FIX",\n'
+        '      "issues": ["Missing acceptance criteria for FR-003"],\n'
+        '      "suggestions": ["Add Given/When/Then acceptance criteria for each FR"]\n'
+        "    }\n"
+        "  ]\n"
+        "}\n\n"
+        "Status guidance:\n"
+        "- CLEAN: Section or document is complete, specific, actionable, and aligns with BRD.\n"
+        "- NEEDS_FIX: There are minor to moderate omissions, vagueness, or TBDs that can be resolved.\n"
+        "- CRITICAL_GAPS: Major sections are missing or the document fundamentally fails to address the BRD requirements.\n\n"
+        "Do not wrap output in ```json``` blocks. Ensure valid JSON syntax.\n"
+    )
+
+
+def build_fsd_section_fix_prompt(
+    section_name: str,
+    current_content: str,
+    brd_text: str,
+    project_meta: dict,
+    issues: list,
+    suggestions: list,
+    settings: dict,
+) -> str:
+    """Prompt to rewrite a single FSD section to fix identified issues."""
+    depth = settings.get("depth", "Standard")
+    language = settings.get("language", "English")
+    terminology = settings.get("terminology", "Standard FSD")
+    examples = settings.get("examples", True)
+
+    style_guide = f"Write in {language}. Use {terminology} terminology. Depth: {depth}."
+    if examples:
+        style_guide += " Include concrete examples, sample data, or Mermaid diagrams where relevant."
+
+    issues_text = "\n".join([f"- {i}" for i in (issues or [])]) or "None reported."
+    suggestions_text = "\n".join([f"- {s}" for s in (suggestions or [])]) or "None."
+    brd_sample = brd_text[:3000]
+    name = project_meta.get("name", "Unknown")
+
+    return (
+        f"{style_guide}\n\n"
+        "You are rewriting a single FSD section to fix quality issues identified by an AI auditor.\n\n"
+        f"Project: {name}\n"
+        "BRD excerpt (for alignment context):\n---\n"
+        f"{brd_sample}\n...\n---\n\n"
+        f"Section to fix: {section_name}\n\n"
+        "Current content:\n---\n"
+        f"{current_content}\n---\n\n"
+        f"Identified issues (must be fixed):\n{issues_text}\n\n"
+        f"Suggested improvements:\n{suggestions_text}\n\n"
+        "Instructions:\n"
+        f'- Output ONLY the rewritten markdown content for section "{section_name}".\n'
+        f'- Do NOT change the section title - keep it as "{section_name}".\n'
+        "- Do NOT output any other sections.\n"
+        "- Address every listed issue.\n"
+        "- Do NOT add fictional names, emails, or company-specific facts not in the BRD.\n"
+        "- Mark remaining unknowns as **TBD** with a brief explanation.\n"
+        "- Be specific, structured, and developer-ready.\n"
+    )

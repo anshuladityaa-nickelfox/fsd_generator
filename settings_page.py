@@ -26,8 +26,8 @@ def render_settings_page():
         openai_key = st.text_input("OpenAI API Key", type="password", value=openai_val)
         openai_model = st.text_input(
             "OpenAI Model Name",
-            value=st.session_state.get("api_keys", {}).get("openai_model", "gpt-4o-mini"),
-            help="Example: gpt-4o-mini. Use a model available to your account.",
+            value=st.session_state.get("api_keys", {}).get("openai_model", "gpt-5.2"),
+            help="Example: gpt-5.2. Use a model available to your account.",
         )
         
         if st.button("Save Keys"):
@@ -70,7 +70,7 @@ def render_settings_page():
 
                         client = OpenAIClient(
                             st.session_state["api_keys"]["openai"],
-                            model_name=st.session_state["api_keys"].get("openai_model", "gpt-4o-mini"),
+                            model_name=st.session_state["api_keys"].get("openai_model", "gpt-5.2"),
                         )
                         res = client.generate("Respond with 'OK'", "You are a tester.")
                         st.markdown("<span class='status-pill status-pass'>OpenAI Connected</span>", unsafe_allow_html=True)

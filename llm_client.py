@@ -55,7 +55,7 @@ class GroqClient:
 
 
 class OpenAIClient:
-    def __init__(self, api_key, model_name="gpt-4o-mini"):
+    def __init__(self, api_key, model_name="gpt-5.2"):
         self.api_key = api_key
         self.model_name = model_name
         if not api_key:
@@ -106,7 +106,7 @@ class AutoClient:
         groq_key,
         openai_key,
         groq_model="llama-3.3-70b-versatile",
-        openai_model="gpt-4o-mini",
+        openai_model="gpt-5.2",
     ):
         self.groq_key = groq_key
         self.openai_key = openai_key

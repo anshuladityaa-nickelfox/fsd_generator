@@ -3,7 +3,7 @@ from llm_client import AutoClient, GroqClient, OpenAIClient
 
 
 def determine_client(provider, keys):
-    openai_model = (keys or {}).get("openai_model") or "gpt-4o-mini"
+    openai_model = (keys or {}).get("openai_model") or "gpt-5.2"
     groq_model = (keys or {}).get("groq_model") or "llama-3.3-70b-versatile"
     if provider == "Groq":
         if not (keys or {}).get("groq"):

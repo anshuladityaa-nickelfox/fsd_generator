@@ -29,7 +29,7 @@ function loadState(): AppState {
   }
   return {
     projectMeta: { name: "", context: "", tech_stack: "" },
-    apiKeys: { groq: "", groq_model: "llama-3.3-70b-versatile", openai: "", openai_model: "gpt-4o-mini" },
+    apiKeys: { groq: "", groq_model: "llama-3.3-70b-versatile", openai: "", openai_model: "gpt-5.2" },
     provider: "Auto",
     brdText: "",
     brdTextForAi: "",

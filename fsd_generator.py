@@ -2,9 +2,10 @@ import streamlit as st
 import time
 from prompt_engine import build_section_prompt, build_quality_eval_prompt, SYSTEM_PROMPT, FSD_SECTIONS
 from llm_client import AutoClient, GroqClient, OpenAIClient
+from fsd_validator import auto_fix_fsd
 
 def determine_client(provider, keys):
-    openai_model = (keys or {}).get("openai_model") or "gpt-4o-mini"
+    openai_model = (keys or {}).get("openai_model") or "gpt-5.2"
     groq_model = (keys or {}).get("groq_model") or "llama-3.3-70b-versatile"
     if provider == "Groq":
         if not (keys or {}).get("groq"):
@@ -26,6 +27,7 @@ def generate_fsd_orchestrator(brd_text, project_meta, settings, api_keys, progre
     client = determine_client(settings.get("model_provider", "Auto"), api_keys)
     
     st.session_state["fsd_sections"] = []
+    st.session_state["fsd_validation"] = None
     previous_summary = ""
     
     total_sections = len(FSD_SECTIONS)
@@ -47,8 +49,6 @@ def generate_fsd_orchestrator(brd_text, project_meta, settings, api_keys, progre
             # Show live preview
             preview_area.markdown(f"### {section_name}\n\n{content}")
             
-            # Simple summarization strategy: append the latest title to the context
-            # A more robust App would summarize actual content
             previous_summary += f"- {section_name}\n"
             
         except Exception as e:
@@ -56,18 +56,45 @@ def generate_fsd_orchestrator(brd_text, project_meta, settings, api_keys, progre
             break
             
         progress_bar.progress((idx + 1) / total_sections)
-        time.sleep(0.5) # Rate limit padding mostly
+        time.sleep(0.5)
         
-    status_text.text("Running self-evaluation...")
-    # Concat FSD 
+    # Quick quality eval (existing)
+    status_text.text("Running quality evaluation...")
     full_fsd = "\n\n".join([sec["content"] for sec in st.session_state.get("fsd_sections", [])])
-    
     eval_prompt = build_quality_eval_prompt(full_fsd)
     try:
         eval_result = client.generate(eval_prompt, SYSTEM_PROMPT)
         st.session_state["fsd_evaluation"] = eval_result
     except Exception as e:
         st.session_state["fsd_evaluation"] = f"Evaluation failed: {e}"
+
+    # ── AUTO-FIX VALIDATION LAYER ──────────────────────────────────────────
+    status_text.text("🛡️ Running AI validation + auto-fix…")
+    provider = settings.get("model_provider", "Auto")
+    try:
+        validation_result = auto_fix_fsd(
+            fsd_sections=st.session_state["fsd_sections"],
+            brd_text=brd_text,
+            project_meta=project_meta,
+            settings=settings,
+            provider=provider,
+            api_keys=api_keys,
+            max_rounds=3,
+        )
+        # Update sections with fixed content
+        st.session_state["fsd_sections"] = validation_result["sections"]
+        st.session_state["fsd_validation"] = validation_result
+    except Exception as e:
+        status_text.text(f"Validation failed: {e}")
+        st.session_state["fsd_validation"] = {
+            "final_status": "ERROR",
+            "initial_status": "UNKNOWN",
+            "rounds_taken": 0,
+            "fix_log": [],
+            "audit_detail": {},
+            "_error": str(e),
+        }
         
     status_text.text("Generation Complete!")
     return True
+
